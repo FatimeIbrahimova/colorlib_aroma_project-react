@@ -12,6 +12,9 @@
     right: -200px;
     bottom: 0px;
 }
+.hero-sec_left_img img{
+    height: 600px;
+}
 .hero-sec_right{
     background-color: #f1f6f7;
     width: 60%;

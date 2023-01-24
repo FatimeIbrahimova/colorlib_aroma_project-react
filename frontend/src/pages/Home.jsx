@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import "./style.css"
 import axios from "axios"
 
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -11,8 +14,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+import { InputAdornment, TextField } from '@mui/material';
+import { Helmet } from 'react-helmet';
 const Home = () => {
     const [data, setData] = useState([])
+    const [value,setValue]=useState("")
     const getData = async () => {
         const res = await axios.get("http://localhost:8080/users")
         setData(res.data)
@@ -29,8 +35,19 @@ const Home = () => {
         axios.delete(`http://localhost:8080/users/${id}`)
         getData()
     }
+    const handleChange=(e)=>{
+       setValue(e.target.value)
+       console.log(value);
+    }
+    const handleSort=(a,b)=>{
+         return a.price-b.price
+    }
     return (
         <>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>Home Page</title>
+        </Helmet>
             <div className='hero-sec'>
                 <div className='hero-sec_left'>
                     <div className='hero-sec_left_img'>
@@ -62,9 +79,28 @@ const Home = () => {
                     <div className='third-sec_desc'>
                         <h4>Popular item in the market</h4>
                         <h1>Trending Product</h1>
+                        <TextField
+                        onChange={(e)=>handleChange(e)}
+                            label="Search cards by category"
+                          InputProps={{
+                            endAdornment: (
+                             <InputAdornment>
+                             <IconButton>
+                             <SearchIcon/>
+                            </IconButton>
+                            </InputAdornment>
+                        )
+                      }}
+                  />
+                  <button onClick={()=>handleSort()}>Sort by price</button>
                     </div>
                     <div className='cards'>
-                        {data && data.map((product) => (
+                        {data && data
+                        .filter(product=>{
+                            return value.trim().toLowerCase()==="" ? product : product.category.toLowerCase().includes(value.toLowerCase())
+                        })
+                        // .sort((a,b)=>a.price-b.price)
+                        .map((product) => (
                             <div className='first-card'>
                                 <div className='first-card_img'>
                                     <img src={product.url} />
